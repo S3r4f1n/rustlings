@@ -6,6 +6,7 @@
 // Execute `rustlings hint try_from_into` or use the `hint` watch subcommand for a hint.
 
 use std::convert::{TryFrom, TryInto};
+use std::cmp::{min,max};
 
 #[derive(Debug, PartialEq)]
 struct Color {
@@ -23,7 +24,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -38,6 +38,10 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        match tuple {
+            (a, b, c) if max(max(a,b),c) <= 255 && min(min(a,b),c) >= 0 => Ok(Color{red: a as u8,green: b as u8,blue: c as u8}),
+            _ => Err(IntoColorError::IntConversion),
+        }
     }
 }
 
@@ -45,6 +49,11 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        match arr {
+            p if p.len() != 3 => Err(IntoColorError::BadLen),
+            p if *p.iter().max().expect("no max val") <= 255 && *p.iter().min().expect("no min val") >= 0 => Ok(Color{red: p[0] as u8,green: p[1] as u8,blue: p[2] as u8}),
+            _ => Err(IntoColorError::IntConversion),
+        }
     }
 }
 
@@ -52,6 +61,13 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        match slice {
+            p if p.len() != 3 => Err(IntoColorError::BadLen),
+            p if 
+                *p.iter().max().expect("no max val") <= 255 && *p.iter().min().expect("no min val") >= 0 
+                => Ok(Color{red: p[0] as u8,green: p[1] as u8,blue: p[2] as u8}),
+            _ => Err(IntoColorError::IntConversion),
+        }
     }
 }
 
